@@ -1,5 +1,5 @@
 {
-  "name": "user-management-app",
+  "name": "winsurf-seafood-ecommerce",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,7 +19,10 @@
     "clsx": "^2.1.0",
     "lucide-react": "^0.323.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "aws-amplify": "^5.3.11",
+    "jwt-decode": "^3.1.2",
+    "@aws-amplify/ui-react": "^5.3.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.17",
