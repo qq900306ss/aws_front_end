@@ -54,7 +54,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold">Winsurf</span>
+              <span className="text-xl font-bold">海鮮專賣</span>
               <span className="ml-2 text-blue-300">海鮮專賣</span>
             </Link>
             

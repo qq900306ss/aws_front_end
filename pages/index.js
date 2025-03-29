@@ -72,7 +72,7 @@ export default function Home() {
               最新鮮的<span className="text-blue-300">海鮮</span>，直送到您家
             </h1>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl">
-              Winsurf 專注於提供最優質的蚵仔和各種海鮮，從海洋到餐桌，保證新鮮美味。
+            海鮮專賣 專注於提供最優質的蚵仔和各種海鮮，從海洋到餐桌，保證新鮮美味。
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/products" className="px-8 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">
@@ -111,7 +111,7 @@ export default function Home() {
         <div className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900">為什麼選擇 Winsurf</h2>
+              <h2 className="text-3xl font-bold text-gray-900">為什麼選擇 海鮮專賣</h2>
               <p className="mt-4 text-xl text-gray-600">我們致力於提供最優質的服務和產品</p>
             </div>
             
