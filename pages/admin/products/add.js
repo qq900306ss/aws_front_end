@@ -110,7 +110,7 @@ export default function AddProduct() {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>新增商品 - 管理員後台 | Winsurf 海鮮專賣</title>
+        <title>新增商品 - 管理員後台 |  海鮮專賣</title>
       </Head>
 
       <Navbar />

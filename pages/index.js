@@ -46,8 +46,8 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>Winsurf 海鮮專賣 - 優質蚵仔與海鮮</title>
-        <meta name="description" content="Winsurf 海鮮專賣店，提供最新鮮的蚵仔和各種海鮮產品，直送到您家" />
+        <title>海鮮專賣 - 優質蚵仔與海鮮</title>
+        <meta name="description" content=" 海鮮專賣店，提供最新鮮的蚵仔和各種海鮮產品，直送到您家" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

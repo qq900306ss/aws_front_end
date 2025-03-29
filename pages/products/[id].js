@@ -217,7 +217,7 @@ export default function ProductDetail({ product }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>{product.name} - Winsurf 海鮮專賣</title>
+        <title>{product.name} -  海鮮專賣</title>
         <meta name="description" content={product.description} />
       </Head>
 

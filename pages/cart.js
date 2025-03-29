@@ -93,7 +93,7 @@ export default function Cart() {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>購物車 - Winsurf 海鮮專賣</title>
+        <title>購物車 - 海鮮專賣</title>
         <meta name="description" content="查看您的購物車內容並進行結帳" />
       </Head>
 

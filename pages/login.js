@@ -81,8 +81,8 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>登入 - Winsurf 海鮮專賣</title>
-        <meta name="description" content="登入 Winsurf 海鮮專賣網站，享受會員專屬優惠" />
+        <title>登入 - 海鮮專賣</title>
+        <meta name="description" content="登入  海鮮專賣網站，享受會員專屬優惠" />
       </Head>
 
       <Navbar />

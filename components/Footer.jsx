@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="mb-8 md:mb-0">
-            <h3 className="text-lg font-semibold mb-4">Winsurf 海鮮專賣</h3>
+            <h3 className="text-lg font-semibold mb-4">海鮮專賣</h3>
             <p className="text-blue-300 text-sm">
               專業販售各種優質海鮮，特別是新鮮蚵仔。從海洋到餐桌，我們提供最優質的海鮮產品。
             </p>
@@ -112,7 +112,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-8 pt-8 border-t border-blue-800 text-sm text-center text-blue-400">
-          <p>&copy; {new Date().getFullYear()} Winsurf 海鮮專賣. 版權所有.</p>
+          <p>&copy; {new Date().getFullYear()} 海鮮專賣. 版權所有.</p>
         </div>
       </div>
     </footer>

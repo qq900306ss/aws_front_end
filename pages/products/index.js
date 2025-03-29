@@ -140,8 +140,8 @@ export default function Products() {
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
-        <title>商品列表 - Winsurf 海鮮專賣</title>
-        <meta name="description" content="瀏覽 Winsurf 海鮮專賣的各種新鮮海鮮產品，包括蚵仔、蝦類、螃蟹等" />
+        <title>商品列表 -  海鮮專賣</title>
+        <meta name="description" content="瀏覽  海鮮專賣的各種新鮮海鮮產品，包括蚵仔、蝦類、螃蟹等" />
       </Head>
 
       <Navbar />
