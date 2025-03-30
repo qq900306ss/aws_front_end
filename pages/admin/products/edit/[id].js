@@ -10,7 +10,7 @@ import { useAuth } from '../../../../lib/auth';
 export default function EditProduct() {
   const router = useRouter();
   const { id } = router.query;
-  const { isAuthenticated, isAdmin, getToken, loading } = useAuth();
+  const { user, isAuthenticated, isAdmin, getToken, loading } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -28,17 +28,24 @@ export default function EditProduct() {
   // 檢查用戶是否已登入且是管理員
   useEffect(() => {
     if (!loading) {
+      console.log('Auth state:', { isAuthenticated: isAuthenticated(), isAdmin: isAdmin(), user });
+      
       if (!isAuthenticated()) {
         toast.error('請先登入');
         router.push('/login');
-      } else if (!isAdmin()) {
+        return;
+      } 
+      
+      if (!isAdmin()) {
         toast.error('您沒有管理員權限');
         router.push('/');
-      } else {
-        setIsAuthorized(true);
+        return;
       }
+      
+      // 用戶已登入且是管理員
+      setIsAuthorized(true);
     }
-  }, [isAuthenticated, isAdmin, loading, router]);
+  }, [isAuthenticated, isAdmin, loading, router, user]);
 
   // 獲取商品詳情
   useEffect(() => {
@@ -50,13 +57,21 @@ export default function EditProduct() {
   const fetchProductDetails = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products/${id}`);
+      const token = getToken();
+      
+      // 添加授權令牌到請求頭
+      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch product details');
       }
       
       const product = await response.json();
+      console.log('Product details:', product);
       
       // 將API返回的數據轉換為表單數據格式
       setFormData({
