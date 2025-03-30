@@ -59,8 +59,8 @@ export default function EditProduct() {
       setIsLoading(true);
       const token = getToken();
       
-      // 添加授權令牌到請求頭
-      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products/${id}`, {
+      // 使用查詢參數而不是路徑參數
+      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products?id=${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -168,7 +168,8 @@ export default function EditProduct() {
         productData.originalPrice = Number(formData.originalPrice);
       }
       
-      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products/${id}`, {
+      // 使用查詢參數而不是路徑參數
+      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products?id=${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

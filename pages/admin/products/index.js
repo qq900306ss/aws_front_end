@@ -66,7 +66,8 @@ export default function ProductsManagement() {
 
     try {
       const token = getToken();
-      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products/${productId}`, {
+      // 使用查詢參數而不是路徑參數
+      const response = await fetch(`https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products?id=${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
