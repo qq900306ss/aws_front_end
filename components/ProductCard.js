@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function ProductCard({ product }) {
   const { id, name, price, originalPrice, description, image, image_url, category } = product;
@@ -13,12 +12,11 @@ export default function ProductCard({ product }) {
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lg bg-gray-200">
         <Link href={`/products/${id}`}>
           <div className="relative h-64 w-full">
-            <Image
+            {/* 使用原生 img 標籤而不是 Next.js Image 組件 */}
+            <img
               src={imageSource}
               alt={name}
-              fill
-              style={{ objectFit: 'cover' }}
-              className="transition-transform group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://via.placeholder.com/400x400?text=Image+Error';

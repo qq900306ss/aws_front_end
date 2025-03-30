@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { Minus, Plus, ShoppingCart, Heart, ArrowLeft, Star } from 'lucide-react';
@@ -192,7 +191,8 @@ export default function ProductDetail({ product }) {
   };
   
   // 確保產品有圖片
-  const images = productData.images || [productData.image || '/images/placeholder.jpg'];
+  const images = productData.images || [productData.image_url || productData.image || '/images/placeholder.jpg'];
+  
   // 如果images是字串而非陣列，轉換為陣列
   const imageArray = typeof images === 'string' ? [images] : Array.isArray(images) ? images : ['/images/placeholder.jpg'];
 
@@ -220,12 +220,13 @@ export default function ProductDetail({ product }) {
               {/* 商品圖片區 */}
               <div>
                 <div className="relative h-96 w-full mb-4 rounded-lg overflow-hidden">
-                  <Image
+                  {/* 使用原生 img 標籤而不是 Next.js Image 組件 */}
+                  <img
                     src={imageArray[activeImage]}
                     alt={productData.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
+                    className="w-full h-full object-cover"
                     onError={(e) => {
+                      e.target.onerror = null;
                       e.target.src = '/images/placeholder.jpg';
                     }}
                   />
@@ -242,12 +243,12 @@ export default function ProductDetail({ product }) {
                         }`}
                         onClick={() => setActiveImage(index)}
                       >
-                        <Image
+                        <img
                           src={img}
                           alt={`${productData.name} - 圖片 ${index + 1}`}
-                          fill
-                          style={{ objectFit: 'cover' }}
+                          className="w-full h-full object-cover"
                           onError={(e) => {
+                            e.target.onerror = null;
                             e.target.src = '/images/placeholder.jpg';
                           }}
                         />
