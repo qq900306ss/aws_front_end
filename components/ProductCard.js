@@ -2,8 +2,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function ProductCard({ product }) {
-  const { id, name, price, originalPrice, description, image_url, category } = product;
+  const { id, name, price, originalPrice, description, image, image_url, category } = product;
   const isDiscounted = originalPrice && originalPrice > price;
+  
+  // 使用 image_url 或 image 屬性，確保至少有一個有效的圖片 URL
+  const imageSource = image_url || image || 'https://via.placeholder.com/400x400?text=No+Image';
 
   return (
     <div className="group relative bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -11,7 +14,7 @@ export default function ProductCard({ product }) {
         <Link href={`/products/${id}`}>
           <div className="relative h-64 w-full">
             <Image
-              src={image_url || 'https://via.placeholder.com/400x400?text=No+Image'}
+              src={imageSource}
               alt={name}
               fill
               style={{ objectFit: 'cover' }}
