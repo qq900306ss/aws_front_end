@@ -9,25 +9,50 @@ import { toast } from 'react-hot-toast';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { isAuthenticated, isAdmin, loading } = useAuth();
+  const { user, isAuthenticated, isAdmin, loading } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   // 檢查用戶是否已登入且是管理員
   useEffect(() => {
+    // 確保 auth 狀態已加載完成
     if (!loading) {
+      console.log('Auth state:', { isAuthenticated: isAuthenticated(), isAdmin: isAdmin(), user });
+      
       if (!isAuthenticated()) {
         toast.error('請先登入');
         router.push('/login');
-      } else if (!isAdmin()) {
+        return;
+      } 
+      
+      if (!isAdmin()) {
         toast.error('您沒有管理員權限');
         router.push('/');
-      } else {
-        setIsAuthorized(true);
+        return;
       }
+      
+      // 用戶已登入且是管理員
+      setIsAuthorized(true);
     }
-  }, [isAuthenticated, isAdmin, loading, router]);
+  }, [isAuthenticated, isAdmin, loading, router, user]);
 
-  if (loading || !isAuthorized) {
+  // 顯示加載中狀態
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-lg text-gray-600">正在加載中...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // 顯示驗證權限中狀態
+  if (!isAuthorized) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
@@ -102,7 +127,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">新增商品</dt>
                       <dd>
-                        <div className="text-lg font-medium text-gray-900">新增海鮮商品</div>
+                        <div className="text-lg font-medium text-gray-900">添加新商品</div>
                       </dd>
                     </dl>
                   </div>
@@ -110,7 +135,7 @@ export default function AdminDashboard() {
               </div>
               <div className="bg-gray-50 px-5 py-3">
                 <div className="text-sm">
-                  <Link href="/admin/products/add" className="font-medium text-green-600 hover:text-green-500">
+                  <Link href="/admin/products/new" className="font-medium text-green-600 hover:text-green-500">
                     新增商品
                   </Link>
                 </div>
@@ -130,7 +155,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">訂單管理</dt>
                       <dd>
-                        <div className="text-lg font-medium text-gray-900">管理客戶訂單</div>
+                        <div className="text-lg font-medium text-gray-900">管理所有訂單</div>
                       </dd>
                     </dl>
                   </div>
@@ -145,39 +170,11 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* 優惠券管理卡片 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                    <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">優惠券管理</dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">管理優惠券</div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-sm">
-                  <Link href="/admin/coupons" className="font-medium text-purple-600 hover:text-purple-500">
-                    管理優惠券
-                  </Link>
-                </div>
-              </div>
-            </div>
-
             {/* 用戶管理卡片 */}
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-red-500 rounded-md p-3">
+                  <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
                     <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
@@ -186,7 +183,7 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">用戶管理</dt>
                       <dd>
-                        <div className="text-lg font-medium text-gray-900">管理用戶帳戶</div>
+                        <div className="text-lg font-medium text-gray-900">管理所有用戶</div>
                       </dd>
                     </dl>
                   </div>
@@ -194,37 +191,8 @@ export default function AdminDashboard() {
               </div>
               <div className="bg-gray-50 px-5 py-3">
                 <div className="text-sm">
-                  <Link href="/admin/users" className="font-medium text-red-600 hover:text-red-500">
+                  <Link href="/admin/users" className="font-medium text-purple-600 hover:text-purple-500">
                     查看所有用戶
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* 網站設定卡片 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-gray-500 rounded-md p-3">
-                    <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">網站設定</dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900">管理網站設定</div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-sm">
-                  <Link href="/admin/settings" className="font-medium text-gray-600 hover:text-gray-500">
-                    網站設定
                   </Link>
                 </div>
               </div>
