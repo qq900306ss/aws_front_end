@@ -39,7 +39,8 @@ export default function Login() {
   const handleGoogleLogin = () => {
     // 重定向到 Google OAuth 頁面
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-    const redirectUri = `${window.location.origin}/login`;
+    // 使用 API 文件中指定的重定向 URI
+    const redirectUri = 'https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/oauth/callback';
     
     const params = new URLSearchParams({
       client_id: '970174882826-6mau4p0nl1vha8uqg4h1ofqmembi4jl3.apps.googleusercontent.com',
