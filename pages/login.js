@@ -43,7 +43,7 @@ export default function Login() {
     const redirectUri = `${window.location.origin}/login`;
     
     const params = new URLSearchParams({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID', // 需要替換為實際的 Google Client ID
+      client_id: '970174882826-6mau4p0nl1vha8uqg4h1ofqmembi4jl3.apps.googleusercontent.com', // 需要替換為實際的 Google Client ID
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'email profile',
