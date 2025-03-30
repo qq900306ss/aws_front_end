@@ -6,43 +6,39 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 
-// 模擬產品資料
-const mockProducts = [
-  {
-    id: '1',
-    name: '新鮮蚵仔',
-    price: 299,
-    description: '來自台灣東部的優質蚵仔，鮮美多汁，適合各種料理方式。',
-    image: 'https://images.unsplash.com/photo-1635146037526-e21e379df5b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
-  },
-  {
-    id: '2',
-    name: '極品大蚵',
-    price: 499,
-    originalPrice: 599,
-    discount: true,
-    description: '特大號蚵仔，肉質飽滿，鮮甜可口，是高級料理的首選。',
-    image: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
-  },
-  {
-    id: '3',
-    name: '鮮蝦組合',
-    price: 399,
-    description: '精選各種新鮮蝦類，包括草蝦、白蝦等，適合多種烹飪方式。',
-    image: 'https://images.unsplash.com/photo-1565680018160-64827b3608ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
-  },
-  {
-    id: '4',
-    name: '鮮活螃蟹',
-    price: 599,
-    originalPrice: 699,
-    discount: true,
-    description: '當季捕撈的新鮮螃蟹，肉質鮮美，適合清蒸或其他烹飪方式。',
-    image: 'https://images.unsplash.com/photo-1550747545-c896b5f89ff7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
-  }
-];
-
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 獲取商品數據
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/staging/products');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        const products = await response.json();
+        console.log('Fetched products:', products);
+        
+        // 只顯示前4個商品作為精選商品
+        setFeaturedProducts(products.slice(0, 4));
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setError('無法載入商品，請稍後再試');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
@@ -93,15 +89,29 @@ export default function Home() {
               <p className="mt-4 text-xl text-gray-600">我們嚴選最優質的海鮮，讓您在家也能享受海洋的鮮美</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {mockProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500">{error}</p>
+              </div>
+            ) : featuredProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">暫無商品</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {featuredProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
             
             <div className="mt-12 text-center">
-              <Link href="/products" className="inline-block px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-600 hover:text-white transition-colors">
-                查看更多商品
+              <Link href="/products" className="inline-block px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-md hover:bg-blue-50 transition-colors">
+                查看所有商品
               </Link>
             </div>
           </div>
@@ -111,39 +121,39 @@ export default function Home() {
         <div className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900">為什麼選擇 海鮮專賣</h2>
-              <p className="mt-4 text-xl text-gray-600">我們致力於提供最優質的服務和產品</p>
+              <h2 className="text-3xl font-bold text-gray-900">為什麼選擇我們</h2>
+              <p className="mt-4 text-xl text-gray-600">我們致力於提供最優質的海鮮產品和服務</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
-                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">品質保證</h3>
-                <p className="text-gray-600">我們嚴選每一項海鮮產品，確保新鮮度和品質，讓您吃得安心。</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">新鮮保證</h3>
+                <p className="text-gray-600">我們的海鮮每日直送，保證新鮮度和品質。</p>
               </div>
               
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
-                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">快速配送</h3>
-                <p className="text-gray-600">我們提供快速配送服務，確保海鮮在最佳狀態送達您的手中。</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">快速配送</h3>
+                <p className="text-gray-600">下單後24小時內送達，確保海鮮的最佳風味。</p>
               </div>
               
-              <div className="text-center p-6 bg-blue-50 rounded-lg">
-                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="text-center p-6">
+                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">安全支付</h3>
-                <p className="text-gray-600">多種安全支付方式，讓您購物無後顧之憂。</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">安全付款</h3>
+                <p className="text-gray-600">多種付款方式，安全便捷，讓您購物無憂。</p>
               </div>
             </div>
           </div>

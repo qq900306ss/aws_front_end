@@ -358,7 +358,7 @@ export default function EditProduct() {
                   <h2 className="text-lg font-medium text-gray-900 border-b pb-2">商品圖片</h2>
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700">
-                      上傳圖片 <span className="text-red-500">*</span>
+                      圖片 URL <span className="text-red-500">*</span>
                     </label>
                     <div className="mt-1 flex flex-wrap gap-4">
                       {formData.images.map((image, index) => (
@@ -367,6 +367,10 @@ export default function EditProduct() {
                             src={image}
                             alt={`Product image ${index + 1}`}
                             className="h-32 w-32 object-cover rounded-md"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://via.placeholder.com/150?text=圖片載入失敗";
+                            }}
                           />
                           <button
                             type="button"
@@ -385,7 +389,7 @@ export default function EditProduct() {
                       )}
                     </div>
                     <p className="mt-2 text-sm text-gray-500">
-                      上傳商品圖片，最多 5 張。建議尺寸 1000x1000 像素，格式為 JPG 或 PNG。
+                      輸入商品圖片 URL，最多 5 張。建議尺寸 1000x1000 像素，格式為 JPG 或 PNG。
                     </p>
                   </div>
                 </div>
