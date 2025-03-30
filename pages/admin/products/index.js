@@ -9,26 +9,34 @@ import { toast } from 'react-hot-toast';
 
 export default function ProductsManagement() {
   const router = useRouter();
-  const { isAuthenticated, isAdmin, getToken, loading } = useAuth();
+  const { user, isAuthenticated, isAdmin, getToken, loading } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // 檢查用戶是否已登入且是管理員
   useEffect(() => {
+    // 確保 auth 狀態已加載完成
     if (!loading) {
+      console.log('Auth state:', { isAuthenticated: isAuthenticated(), isAdmin: isAdmin(), user });
+      
       if (!isAuthenticated()) {
         toast.error('請先登入');
         router.push('/login');
-      } else if (!isAdmin()) {
+        return;
+      } 
+      
+      if (!isAdmin()) {
         toast.error('您沒有管理員權限');
         router.push('/');
-      } else {
-        setIsAuthorized(true);
-        fetchProducts();
+        return;
       }
+      
+      // 用戶已登入且是管理員
+      setIsAuthorized(true);
+      fetchProducts();
     }
-  }, [isAuthenticated, isAdmin, loading, router]);
+  }, [isAuthenticated, isAdmin, loading, router, user]);
 
   // 獲取所有商品
   const fetchProducts = async () => {
@@ -78,6 +86,7 @@ export default function ProductsManagement() {
     }
   };
 
+  // 顯示加載中狀態
   if (loading || !isAuthorized || isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -111,7 +120,7 @@ export default function ProductsManagement() {
                 管理所有海鮮商品，包括新增、編輯和刪除。
               </p>
             </div>
-            <Link href="/admin/products/add" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <Link href="/admin/products/new" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               新增商品
             </Link>
           </div>
@@ -130,6 +139,10 @@ export default function ProductsManagement() {
                                 className="h-16 w-16 rounded-md object-cover" 
                                 src={product.image_url} 
                                 alt={product.name} 
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "https://via.placeholder.com/150?text=無圖片";
+                                }}
                               />
                             </div>
                           )}
@@ -156,26 +169,14 @@ export default function ProductsManagement() {
                           >
                             刪除
                           </button>
-                          <Link href={`/products/${product.id}`} className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            查看
-                          </Link>
                         </div>
                       </div>
                     </div>
                   </li>
                 ))
               ) : (
-                <li className="px-4 py-12 text-center">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                  </svg>
-                  <p className="mt-4 text-lg font-medium text-gray-900">沒有商品</p>
-                  <p className="mt-1 text-sm text-gray-500">開始添加您的第一個商品吧！</p>
-                  <div className="mt-6">
-                    <Link href="/admin/products/add" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      新增商品
-                    </Link>
-                  </div>
+                <li className="px-4 py-6 text-center text-gray-500">
+                  目前沒有商品。點擊「新增商品」按鈕來添加第一個商品。
                 </li>
               )}
             </ul>
