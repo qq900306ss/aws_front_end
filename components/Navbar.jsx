@@ -5,9 +5,76 @@ import { ShoppingCart, User, Menu, X } from 'lucide-react';
 import { cartAPI } from '../lib/api';
 
 export default function Navbar() {
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout, refreshUser } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [userName, setUserName] = useState('');
+  const [isAdminUser, setIsAdminUser] = useState(false);
+
+  // 初始化用戶資訊和監聽登入/登出事件
+  useEffect(() => {
+    // 更新用戶資訊
+    updateUserInfo();
+
+    // 監聽登入/登出事件
+    const handleUserLoggedIn = () => {
+      console.log('User logged in event detected');
+      updateUserInfo();
+    };
+
+    const handleUserLoggedOut = () => {
+      console.log('User logged out event detected');
+      updateUserInfo();
+    };
+
+    // 監聽 URL 變化，可能包含令牌
+    const handleRouteChange = () => {
+      // 檢查 URL 是否包含令牌參數
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('token')) {
+        console.log('Token detected in URL');
+        const token = urlParams.get('token');
+        if (token) {
+          localStorage.setItem('jwt_token', token);
+          // 移除 URL 中的令牌參數
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+          // 重新驗證用戶
+          refreshUser();
+        }
+      }
+      updateUserInfo();
+    };
+
+    window.addEventListener('userLoggedIn', handleUserLoggedIn);
+    window.addEventListener('userLoggedOut', handleUserLoggedOut);
+    window.addEventListener('popstate', handleRouteChange);
+    
+    // 頁面載入時檢查 URL
+    handleRouteChange();
+
+    return () => {
+      window.removeEventListener('userLoggedIn', handleUserLoggedIn);
+      window.removeEventListener('userLoggedOut', handleUserLoggedOut);
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, [refreshUser]);
+
+  // 更新用戶資訊
+  const updateUserInfo = () => {
+    if (isAuthenticated() && user) {
+      setUserName(user.name || '使用者');
+      setIsAdminUser(isAdmin());
+    } else {
+      setUserName('');
+      setIsAdminUser(false);
+    }
+  };
+
+  // 監聽用戶變化
+  useEffect(() => {
+    updateUserInfo();
+  }, [user, isAuthenticated, isAdmin]);
 
   // 監聽購物車變化
   useEffect(() => {
@@ -69,8 +136,8 @@ export default function Navbar() {
               <Link href="/about" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white">
                 關於我們
               </Link>
-              {isAdmin() && (
-                <Link href="/admin" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 hover:text-white">
+              {isAdminUser && (
+                <Link href="/admin" className="px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 hover:text-white">
                   管理後台
                 </Link>
               )}
@@ -97,11 +164,11 @@ export default function Navbar() {
                   >
                     <span className="sr-only">Open user menu</span>
                     <div className="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center">
-                      {user?.name?.charAt(0) || <User size={16} />}
+                      {userName.charAt(0) || <User size={16} />}
                     </div>
                   </button>
                   <div className="ml-2 hidden md:block">
-                    <div className="text-sm font-medium">{user?.name || '使用者'}</div>
+                    <div className="text-sm font-medium">{userName || '使用者'}</div>
                     <button 
                       onClick={logout}
                       className="text-xs text-blue-300 hover:text-white"
@@ -120,6 +187,11 @@ export default function Navbar() {
                     <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       我的訂單
                     </Link>
+                    {isAdminUser && (
+                      <Link href="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        管理後台
+                      </Link>
+                    )}
                     <button
                       onClick={logout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -170,8 +242,8 @@ export default function Navbar() {
                 <Link href="/orders" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-800 hover:text-white">
                   我的訂單
                 </Link>
-                {isAdmin() && (
-                  <Link href="/admin" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-800 hover:text-white">
+                {isAdminUser && (
+                  <Link href="/admin" className="block px-3 py-2 rounded-md text-base font-medium bg-yellow-600 hover:bg-yellow-700 hover:text-white">
                     管理後台
                   </Link>
                 )}

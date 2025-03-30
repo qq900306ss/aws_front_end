@@ -11,7 +11,7 @@ export default function AuthSuccess() {
   useEffect(() => {
     if (token && userId) {
       // 儲存令牌和用戶 ID
-      localStorage.setItem('winsurf_token', token);
+      localStorage.setItem('jwt_token', token);
       
       // 嘗試解析用戶資訊（如果有的話）
       try {
@@ -19,7 +19,7 @@ export default function AuthSuccess() {
           id: userId,
           // 其他用戶資訊可能需要通過額外的 API 呼叫獲取
         };
-        localStorage.setItem('winsurf_user', JSON.stringify(userInfo));
+        localStorage.setItem('user_info', JSON.stringify(userInfo));
         
         toast.success('登入成功！');
         
