@@ -37,13 +37,12 @@ export default function Login() {
 
   // 處理 Google 登入
   const handleGoogleLogin = () => {
-    // 實際整合時，這裡應該重定向到 Google OAuth 頁面
-    // 目前使用模擬方式
+    // 重定向到 Google OAuth 頁面
     const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const redirectUri = `${window.location.origin}/login`;
     
     const params = new URLSearchParams({
-      client_id: '970174882826-6mau4p0nl1vha8uqg4h1ofqmembi4jl3.apps.googleusercontent.com', // 需要替換為實際的 Google Client ID
+      client_id: '970174882826-6mau4p0nl1vha8uqg4h1ofqmembi4jl3.apps.googleusercontent.com',
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'email profile',
@@ -51,16 +50,8 @@ export default function Login() {
       prompt: 'consent',
     });
     
-    // 在實際環境中，這會重定向到 Google 登入頁面
-    // 目前僅顯示模擬訊息
-    toast.success('模擬 Google 登入流程，實際整合時會重定向到 Google');
-    console.log(`實際環境會重定向到: ${googleAuthUrl}?${params.toString()}`);
-    
-    // 模擬登入成功
-    setTimeout(() => {
-      const mockCode = 'mock_auth_code_' + Math.random().toString(36).substring(2, 15);
-      router.push(`/login?code=${mockCode}`);
-    }, 1500);
+    // 重定向到 Google 登入頁面
+    window.location.href = `${googleAuthUrl}?${params.toString()}`;
   };
 
   if (loading || redirecting) {
