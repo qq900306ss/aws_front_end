@@ -9,34 +9,6 @@ import { useCart } from '../contexts/CartContext';
 
 export default function Cart() {
   const { cart, loading, error, removeItem, updateItemQuantity, clearAllItems, initialized } = useCart();
-  const [imageStyles, setImageStyles] = useState({});
-
-  // 處理圖片載入完成
-  const handleImageLoad = (e, productId) => {
-    const { naturalWidth, naturalHeight } = e.target;
-    const aspectRatio = naturalWidth / naturalHeight;
-    
-    // 根據圖片的寬高比設置不同的 object-fit 樣式
-    if (aspectRatio > 1.5) {
-      // 寬圖片
-      setImageStyles(prev => ({
-        ...prev,
-        [productId]: { objectFit: 'cover', objectPosition: 'center' }
-      }));
-    } else if (aspectRatio < 0.75) {
-      // 高圖片
-      setImageStyles(prev => ({
-        ...prev,
-        [productId]: { objectFit: 'contain', objectPosition: 'center' }
-      }));
-    } else {
-      // 正方形或接近正方形的圖片
-      setImageStyles(prev => ({
-        ...prev,
-        [productId]: { objectFit: 'cover' }
-      }));
-    }
-  };
 
   // 增加商品數量
   const increaseQuantity = (productId, currentQuantity) => {
