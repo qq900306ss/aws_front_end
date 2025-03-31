@@ -7,6 +7,7 @@ import { Minus, Plus, ShoppingCart, Heart, ArrowLeft, Star } from 'lucide-react'
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { cartAPI } from '../../lib/api';
+import { useCart } from '../../contexts/CartContext';
 
 // 獲取所有產品ID列表，用於靜態生成
 export async function getStaticPaths() {
@@ -80,10 +81,14 @@ export default function ProductDetail({ product }) {
   const { id } = router.query;
   
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [productData, setProductData] = useState(product);
   const [isLoading, setIsLoading] = useState(false);
-  const [clientProduct, setClientProduct] = useState(null);
+  const { addItem, getItemQuantity } = useCart();
+  
+  // 獲取商品在購物車中的數量
+  const quantityInCart = getItemQuantity(productData.id);
   
   // 在客戶端獲取產品數據（如果SSR/SSG失敗）
   useEffect(() => {
@@ -104,7 +109,7 @@ export default function ProductDetail({ product }) {
         // 如果API返回的是數組，取第一個元素
         const productData = Array.isArray(data) ? data[0] : data;
         
-        setClientProduct(productData);
+        setProductData(productData);
       } catch (error) {
         console.error('Error fetching product:', error);
       } finally {
@@ -114,9 +119,6 @@ export default function ProductDetail({ product }) {
     
     fetchProduct();
   }, [id, product, isLoading]);
-  
-  // 使用SSR/SSG獲取的產品或客戶端獲取的產品
-  const productData = product || clientProduct;
   
   // 處理商品不存在的情況
   if (router.isFallback || isLoading) {
@@ -153,27 +155,11 @@ export default function ProductDetail({ product }) {
     );
   }
 
-  // 增加數量
-  const increaseQuantity = () => {
-    if (quantity < (productData.stock || 10)) {
-      setQuantity(quantity + 1);
-    } else {
-      toast.error(`庫存僅剩 ${productData.stock || 10} 件`);
-    }
-  };
-
-  // 減少數量
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-
   // 加入購物車
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     try {
-      cartAPI.addToCart(productData, quantity);
-      toast.success(`已加入購物車: ${productData.name} x ${quantity}`);
+      setIsLoading(true);
+      await addItem(productData.id, quantity);
       
       // 觸發自定義事件，通知 Navbar 更新購物車數量
       const event = new Event('cartUpdated');
@@ -181,6 +167,8 @@ export default function ProductDetail({ product }) {
     } catch (error) {
       toast.error('加入購物車失敗');
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -222,7 +210,7 @@ export default function ProductDetail({ product }) {
                 <div className="relative h-96 w-full mb-4 rounded-lg overflow-hidden">
                   {/* 使用原生 img 標籤而不是 Next.js Image 組件 */}
                   <img
-                    src={imageArray[activeImage]}
+                    src={imageArray[currentImageIndex]}
                     alt={productData.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -239,9 +227,9 @@ export default function ProductDetail({ product }) {
                       <button
                         key={index}
                         className={`relative h-20 w-20 rounded-md overflow-hidden border-2 ${
-                          activeImage === index ? 'border-blue-600' : 'border-gray-200'
+                          currentImageIndex === index ? 'border-blue-600' : 'border-gray-200'
                         }`}
-                        onClick={() => setActiveImage(index)}
+                        onClick={() => setCurrentImageIndex(index)}
                       >
                         <img
                           src={img}
@@ -314,8 +302,8 @@ export default function ProductDetail({ product }) {
                   <label className="block text-sm font-medium text-gray-700 mb-2">數量</label>
                   <div className="flex items-center">
                     <button
-                      onClick={decreaseQuantity}
                       className="p-2 border border-gray-300 rounded-l-md bg-gray-50 hover:bg-gray-100"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       disabled={quantity <= 1}
                     >
                       <Minus size={18} />
@@ -334,9 +322,8 @@ export default function ProductDetail({ product }) {
                       max={productData.stock || 10}
                     />
                     <button
-                      onClick={increaseQuantity}
                       className="p-2 border border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100"
-                      disabled={quantity >= (productData.stock || 10)}
+                      onClick={() => setQuantity(quantity + 1)}
                     >
                       <Plus size={18} />
                     </button>
@@ -346,25 +333,38 @@ export default function ProductDetail({ product }) {
                 {/* 操作按鈕 */}
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
-                    onClick={handleAddToCart}
                     className="flex-grow px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center"
-                    disabled={(productData.stock || 10) <= 0}
+                    onClick={handleAddToCart}
+                    disabled={isLoading}
                   >
-                    <ShoppingCart size={20} className="mr-2" />
-                    加入購物車
+                    {isLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        處理中...
+                      </>
+                    ) : (
+                      <>加入購物車</>
+                    )}
                   </button>
                   
                   <button
+                    className={`p-2 rounded-full ${
+                      isFavorite ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                    } hover:bg-opacity-80 transition-colors`}
                     onClick={toggleFavorite}
-                    className={`px-6 py-3 rounded-md flex items-center justify-center ${
-                      isFavorite
-                        ? 'bg-red-50 text-red-600 border border-red-200'
-                        : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-                    }`}
                   >
                     <Heart size={20} className={isFavorite ? 'fill-red-600' : ''} />
                   </button>
                 </div>
+                
+                {quantityInCart > 0 && (
+                  <div className="mt-3 text-sm text-blue-600">
+                    已加入購物車: {quantityInCart} 件
+                  </div>
+                )}
               </div>
             </div>
             
