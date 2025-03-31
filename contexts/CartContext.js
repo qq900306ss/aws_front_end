@@ -16,7 +16,7 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const initializeCart = async () => {
       // 檢查是否有令牌，如果沒有則不獲取購物車
-      const token = localStorage.getItem('winsurf_token');
+      const token = localStorage.getItem('jwt_token');
       if (!token) {
         setInitialized(true);
         return;
@@ -46,7 +46,7 @@ export const CartProvider = ({ children }) => {
   // 監聽 localStorage 中令牌的變化
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'winsurf_token') {
+      if (e.key === 'jwt_token') {
         // 如果令牌被添加或更改，重新獲取購物車
         if (e.newValue) {
           refreshCart();
@@ -65,7 +65,7 @@ export const CartProvider = ({ children }) => {
 
   // 刷新購物車
   const refreshCart = async () => {
-    const token = localStorage.getItem('winsurf_token');
+    const token = localStorage.getItem('jwt_token');
     if (!token) return;
 
     try {
