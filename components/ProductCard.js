@@ -19,7 +19,7 @@ export default function ProductCard({ product }) {
               className="w-full h-full object-cover transition-transform group-hover:scale-105"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = 'https://via.placeholder.com/400x400?text=Image+Error';
+                e.target.src = '/images/placeholder.jpg';
               }}
             />
             {isDiscounted && (
