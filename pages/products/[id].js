@@ -88,7 +88,7 @@ export default function ProductDetail({ product }) {
   const { addItem, getItemQuantity } = useCart();
   
   // 獲取商品在購物車中的數量
-  const quantityInCart = getItemQuantity(productData.id);
+  const quantityInCart = productData ? getItemQuantity(productData.id) : 0;
   
   // 在客戶端獲取產品數據（如果SSR/SSG失敗）
   useEffect(() => {
