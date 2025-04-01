@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/auth';
 import { ShoppingCart, User, Menu, X, Settings } from 'lucide-react';
-import { cartAPI } from '../lib/api';
+import { useCart } from '../contexts/CartContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout, refreshUser } = useAuth();
+  const { getItemCount, cart, initialized } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [userName, setUserName] = useState('');
@@ -79,37 +80,26 @@ export default function Navbar() {
 
   // 監聽購物車變化
   useEffect(() => {
-    // 初始化購物車數量
+    // 使用 CartContext 中的數據更新購物車數量
     updateCartCount();
-
-    // 設置事件監聽器，當 localStorage 變化時更新購物車數量
-    const handleStorageChange = () => {
-      updateCartCount();
-    };
 
     // 自定義事件，用於在其他元件中觸發購物車更新
     const handleCartUpdate = () => {
       updateCartCount();
     };
 
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('cartUpdated', handleCartUpdate);
 
-    // 每秒檢查一次購物車數量（作為備用方案）
-    const intervalId = setInterval(updateCartCount, 1000);
-
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('cartUpdated', handleCartUpdate);
-      clearInterval(intervalId);
     };
-  }, []);
+  }, [cart]); // 依賴於 cart，當 cart 變化時更新
 
   // 更新購物車數量
   const updateCartCount = () => {
     try {
-      const cart = cartAPI.getCart();
-      const count = cart.items.reduce((total, item) => total + item.quantity, 0);
+      // 使用 CartContext 的 getItemCount 函數獲取購物車數量
+      const count = getItemCount();
       setCartItemCount(count);
     } catch (error) {
       console.error('Error updating cart count:', error);
