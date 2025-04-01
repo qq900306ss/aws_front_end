@@ -11,7 +11,7 @@ const API_BASE_URL = 'https://0d2f8bryih.execute-api.us-west-2.amazonaws.com/sta
  */
 const getAuthHeaders = () => {
   // 使用 'winsurf_token' 作為 localStorage 中存儲 JWT token 的 key
-  const token = localStorage.getItem('winsurf_token');
+  const token = localStorage.getItem('jwt_token');
   return {
     'Authorization': token ? `Bearer ${token}` : '',
     'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ const handleApiError = async (response) => {
     const errorData = await response.json();
     // 如果是 401 錯誤（未授權），清除本地存儲中的令牌
     if (response.status === 401) {
-      localStorage.removeItem('winsurf_token');
+      localStorage.removeItem('jwt_token');
     }
     return errorData.error || `請求失敗 (${response.status})`;
   } catch (error) {
